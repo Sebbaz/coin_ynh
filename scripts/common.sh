@@ -7,8 +7,17 @@ function install_dependencies()
 
 function init_db()
 {
+    if [ -e /etc/postgresql/9.4/ ]
+		then
+			pg_hba_conf_file=/etc/postgresql/9.4/main/pg_hba.conf
+		elif [ -e /etc/postgresql/9.6/ ]
+		then
+			pg_hba_conf_file=/etc/postgresql/9.6/main/pg_hba.conf
+		else
+			ynh_die "postgresql shoud be 9.4 or 9.6"
+    fi
     sed -i '/local\s*all\s*all\s*peer/i \
-local all coin password' /etc/postgresql/9.4/main/pg_hba.conf
+local all coin password' "$pg_hba_conf_file"
     service postgresql reload
     # Generate random password
     db_name=$app
